@@ -16,25 +16,23 @@ const Slider = ({ value, setValue, lower, upper }) => {
   const [dragging, setDragging] = useState(false);
   const [position, setPosition] = useState(0);
 
+  const offset = 100;
+  const xCenter = window.innerWidth / 2;
+
   const computeValue = (event) => {
+    const leftmost = document.querySelector(".leftmost");
+
     const box = document.getElementById("box");
+    const left = leftmost.getBoundingClientRect().left;
+    // Figure out which number is below the pointer
+    const num = Math.round((xCenter - left - offset/2) / offset);
 
     const newPosition = event.pageX;
     const diff = newPosition - position;
+    box.style.transform = `translate(${clamp(diff, -box.getBoundingClientRect().width, box.getBoundingClientRect().width)}px)`;
 
     const newValue = clamp(value + diff, lower, upper);
-    setValue(newValue);
-
-    // const box = document.getElementById('box');
-    // const percentage = (event.pageX - box.offsetLeft) / box.offsetWidth;
-    // console.log(percentage);
-    // const value = Math.round(percentage * (upper - lower));
-    // setValue(value);
-  };
-
-  const move = (event) => {
-    computeValue(event);
-    document.getElementById("box").style.transform = `translate(${value}px)`;
+    setValue(num);
   };
 
   // Drag'n'drop functionality
@@ -51,7 +49,7 @@ const Slider = ({ value, setValue, lower, upper }) => {
 
   const dragndrop = (event) => {
     event.preventDefault();
-    if (dragging) move(event);
+    if (dragging) computeValue(event);
   };
 
   return (
@@ -76,8 +74,8 @@ const Slider = ({ value, setValue, lower, upper }) => {
         onMouseLeave={enddrag}
       >
         <div id="box" className="w-full bg-transparent">
-          {range(lower, upper, 10).map((i) => (
-            <span key={i} className="w-1/10 mx-10">
+          {range(lower, upper, 1).map((i) => (
+            <span key={i} className={i == 0 ? "leftmost" : ""} style={{display: 'inline-block', width: `${offset}px`}}>
               {i}
             </span>
           ))}
