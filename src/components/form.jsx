@@ -4,19 +4,22 @@ import { useState } from 'react';
 import Slider from './slider';
 
 import { useQuery } from '@tanstack/react-query';
-import { getActiveQuestion, setAnswer } from '../utils/fetching';
+import { getActiveQuestion, setAnswer, setContestantAnswer } from '../utils/fetching';
 
 /**
  * Form for submitting answers.
  * The form component is responsible for fetching the current question and submitting the answer.
  */
-const Form = ({ id }) => {
+const Form = ({ id, contestant }) => {
   const query = useQuery({ queryKey: ['active-question'], queryFn: () => getActiveQuestion()});
 
   const [value, setValue] = useState(5);
 
   const handleSubmit = () => {
-    setAnswer(id, value);
+    if (contestant)
+      setContestantAnswer(value);
+    else
+      setAnswer(id, value);
   };
 
   if (query.isLoading)
