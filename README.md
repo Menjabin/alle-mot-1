@@ -17,6 +17,7 @@ You may also see any lint errors in the console.
 ## Project setup
 
 Create a file `.env` and fill it with the following contents:
+
 ```
 REACT_APP_API=<firebase api>
 REACT_APP_AUTH_DOMAIN=<firebase auth domain>
@@ -26,3 +27,7 @@ REACT_APP_MESSAGING_SENDER_ID=<firebase messaging sender id>
 REACT_APP_APP_ID=<firebase app id>
 REACT_APP_MEASUREMENT_ID=<firebase measurement id>
 ```
+
+### Technical details
+
+The application stores a unique ID in the local storage of each client. This ID is associated with each submitted answer, and it is used for avoiding multiple answers from the same player.

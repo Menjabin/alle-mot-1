@@ -1,95 +1,90 @@
-import '../index.css';
-import { clamp } from '../utils/math';
+import "../index.css";
+import { clamp } from "../utils/math";
 
-import { useState } from 'react';
+import { useState } from "react";
 
-const range = (start, stop, step=1) =>
-    Array.from(
-        { length: (stop - start) / step + 1 },
-        (_, index) => start + index * step
-    );
+const range = (start, stop, step = 1) =>
+  Array.from(
+    { length: (stop - start) / step + 1 },
+    (_, index) => start + index * step
+  );
 
 /**
  * Slider which allows the user to select a value from a range.
  */
-const Slider = ({ value, setValue }) => {
-    let lower = 0;
-    let upper = 100;
+const Slider = ({ value, setValue, lower, upper }) => {
+  const [dragging, setDragging] = useState(false);
+  const [position, setPosition] = useState(0);
 
-    const [dragging, setDragging] = useState(false);
-    const [position, setPosition] = useState(0);
+  const computeValue = (event) => {
+    const box = document.getElementById("box");
 
-    const computeValue = (event) => {
-        const box = document.getElementById('box');
+    const newPosition = event.pageX;
+    const diff = newPosition - position;
 
+    const newValue = clamp(value + diff, lower, upper);
+    setValue(newValue);
 
-        const newPosition = event.pageX;
-        const diff = newPosition - position;
+    // const box = document.getElementById('box');
+    // const percentage = (event.pageX - box.offsetLeft) / box.offsetWidth;
+    // console.log(percentage);
+    // const value = Math.round(percentage * (upper - lower));
+    // setValue(value);
+  };
 
-        const newValue = clamp(value + diff, lower, upper);
-        setValue(newValue);
+  const move = (event) => {
+    computeValue(event);
+    document.getElementById("box").style.transform = `translate(${value}px)`;
+  };
 
-        // const box = document.getElementById('box');
-        // const percentage = (event.pageX - box.offsetLeft) / box.offsetWidth;
-        // console.log(percentage);
-        // const value = Math.round(percentage * (upper - lower));
-        // setValue(value);
-    }
+  // Drag'n'drop functionality
+  const begindrag = (event) => {
+    event.preventDefault();
+    setPosition(event.pageX);
+    setDragging(true);
+  };
 
-    const move = (event) => {
-        computeValue(event);
-        document.getElementById('box').style.transform = `translate(${value}px)`;
-    }
+  const enddrag = (event) => {
+    event.preventDefault();
+    setDragging(false);
+  };
 
-    // Drag'n'drop functionality
-    const begindrag = (event) => {
-        event.preventDefault();
-        setPosition(event.pageX);
-        setDragging(true);
-    }
+  const dragndrop = (event) => {
+    event.preventDefault();
+    if (dragging) move(event);
+  };
 
-    const enddrag = (event) => {
-        event.preventDefault();
-        setDragging(false);
-    }
-
-    const dragndrop = (event) => {
-        event.preventDefault();
-        if (dragging)
-            move(event);
-    }
-
-    return (
-        <div className='w-full'>
-            {/* Show the value above the slider */}
-            <div className='w-1/12 mx-auto'>
-                <div className='w-full bg-primary'>
-                    {value}
-                </div>
-                <div className="size-1/12 mx-auto
+  return (
+    <div className="w-full">
+      {/* Show the value above the slider */}
+      <div className="w-1/12 mx-auto">
+        <div className="w-full bg-primary">{value}</div>
+        <div
+          className="size-1/12 mx-auto
                     border-l-[20px] border-l-transparent
                     border-t-[25px] border-t-primary
-                    border-r-[20px] border-r-transparent">
-                </div>
-            </div>
+                    border-r-[20px] border-r-transparent"
+        ></div>
+      </div>
 
-            {/* Main slider */}
-            <div className='w-full bg-white'
-                onMouseMove={dragndrop}
-                onMouseDown={begindrag}
-                onMouseUp={enddrag}
-                onMouseLeave={enddrag}
-            >
-                <div id='box' className='w-full bg-transparent'>
-                    {range(lower, upper, 10).map((i) => 
-                        <span key={i} className='w-1/10 mx-10'>
-                            {i}
-                        </span>
-                    )}
-                </div>
-            </div>
+      {/* Main slider */}
+      <div
+        className="w-full bg-white"
+        onMouseMove={dragndrop}
+        onMouseDown={begindrag}
+        onMouseUp={enddrag}
+        onMouseLeave={enddrag}
+      >
+        <div id="box" className="w-full bg-transparent">
+          {range(lower, upper, 10).map((i) => (
+            <span key={i} className="w-1/10 mx-10">
+              {i}
+            </span>
+          ))}
         </div>
-    );
-}
+      </div>
+    </div>
+  );
+};
 
 export default Slider;
