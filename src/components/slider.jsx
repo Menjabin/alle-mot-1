@@ -1,7 +1,7 @@
-import "../index.css";
-import { clamp } from "../utils/math";
+import '../index.css';
+import { clamp } from '../utils/math';
 
-import { useState } from "react";
+import { useEffect, useState } from 'react';
 
 const range = (start, stop, step = 1) =>
   Array.from(
@@ -13,17 +13,22 @@ const range = (start, stop, step = 1) =>
  * Slider which allows the user to select a value from a range.
  */
 const Slider = ({ value, setValue, lower, upper }) => {
-  const [dragging, setDragging] = useState(false);
-  const [position, setPosition] = useState(0);
-  const [translation, setTranslation] = useState(0);
-
   const offset = 50;
   const xCenter = window.innerWidth / 2;
 
-  const computeValue = (event) => {
-    const leftmost = document.querySelector(".leftmost");
+  const [dragging, setDragging] = useState(false);
+  const [position, setPosition] = useState(xCenter);
+  const [translation, setTranslation] = useState(0);
 
-    const box = document.getElementById("box");
+  useEffect(() => {
+    setValue(Math.round((upper - lower) / 2));
+    computeValue({ pageX: xCenter });
+  }, [])
+
+  const computeValue = (event) => {
+    const leftmost = document.querySelector('.leftmost');
+
+    const box = document.getElementById('box');
     const left = leftmost.getBoundingClientRect().left;
     // Figure out which number is below the pointer
     const num = Math.round((xCenter - left - offset/2) / offset);
@@ -31,7 +36,11 @@ const Slider = ({ value, setValue, lower, upper }) => {
     const newPosition = event.pageX || event.touches[0].pageX;
     const diff = newPosition - position;
     setPosition(newPosition);
-    setTranslation(current => current + diff);
+    setTranslation(current => {
+      if (num <= lower && diff > 0) return current;
+      if (num >= upper && diff < 0) return current;
+      return current + diff;
+    });
     box.style.transform = `translate(${translation}px)`;
 
     setValue(num);
@@ -55,21 +64,21 @@ const Slider = ({ value, setValue, lower, upper }) => {
   };
 
   return (
-    <div className="w-full">
+    <div className='w-full'>
       {/* Show the value above the slider */}
-      <div className="w-1/12 mx-auto">
-        <div className="w-full bg-primary">{value}</div>
+      <div className='w-24 mx-auto'>
+        <div className='w-full bg-primary py-1'>{value}</div>
         <div
-          className="size-1/12 mx-auto
+          className='size-1/12 mx-auto
                     border-l-[20px] border-l-transparent
                     border-t-[25px] border-t-primary
-                    border-r-[20px] border-r-transparent"
+                    border-r-[20px] border-r-transparent'
         ></div>
       </div>
 
       {/* Main slider */}
       <div
-        className="w-full bg-white"
+        className='w-full bg-white'
         onMouseMove={drag}
         onMouseDown={begindrag}
         onMouseUp={enddrag}
@@ -78,11 +87,11 @@ const Slider = ({ value, setValue, lower, upper }) => {
         onTouchStart={begindrag}
         onTouchEnd={enddrag}
       >
-        <div id="box" className="py-5 w-full bg-transparent whitespace-nowrap">
+        <div id='box' className='py-5 w-full bg-transparent whitespace-nowrap select-none'>
           {range(lower, upper, 1).map((i) => (
             <span
               key={i}
-              className={i == 0 ? "leftmost" : ""}
+              className={i == 0 ? 'leftmost' : ''}
               style={{display: 'inline-block', width: `${offset}px`}}
             >
               {i}
