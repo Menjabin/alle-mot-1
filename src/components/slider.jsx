@@ -17,7 +17,7 @@ const Slider = ({ value, setValue, lower, upper }) => {
   const [position, setPosition] = useState(0);
   const [translation, setTranslation] = useState(0);
 
-  const offset = 100;
+  const offset = 50;
   const xCenter = window.innerWidth / 2;
 
   const computeValue = (event) => {
@@ -28,10 +28,10 @@ const Slider = ({ value, setValue, lower, upper }) => {
     // Figure out which number is below the pointer
     const num = Math.round((xCenter - left - offset/2) / offset);
 
-    const newPosition = event.pageX;
+    const newPosition = event.pageX || event.touches[0].pageX;
     const diff = newPosition - position;
     setPosition(newPosition);
-    setTranslation(prev => prev + diff);
+    setTranslation(current => current + diff);
     box.style.transform = `translate(${translation}px)`;
 
     setValue(num);
@@ -40,7 +40,7 @@ const Slider = ({ value, setValue, lower, upper }) => {
   // Drag'n'drop functionality
   const begindrag = (event) => {
     event.preventDefault();
-    setPosition(event.pageX);
+    setPosition(event.pageX || event.touches[0].pageX);
     setDragging(true);
   };
 
@@ -74,10 +74,17 @@ const Slider = ({ value, setValue, lower, upper }) => {
         onMouseDown={begindrag}
         onMouseUp={enddrag}
         onMouseLeave={enddrag}
+        onTouchMove={drag}
+        onTouchStart={begindrag}
+        onTouchEnd={enddrag}
       >
-        <div id="box" className="py-3 w-full bg-transparent whitespace-nowrap">
+        <div id="box" className="py-5 w-full bg-transparent whitespace-nowrap">
           {range(lower, upper, 1).map((i) => (
-            <span key={i} className={i == 0 ? "leftmost" : ""} style={{display: 'inline-block', width: `${offset}px`}}>
+            <span
+              key={i}
+              className={i == 0 ? "leftmost" : ""}
+              style={{display: 'inline-block', width: `${offset}px`}}
+            >
               {i}
             </span>
           ))}

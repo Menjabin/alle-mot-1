@@ -13,7 +13,7 @@ function Main() {
       localStorage.setItem('id', storedId);
     }
     setId(storedId);
-  });
+  }, [setId]);
 
   return (
     <div className='App'>
