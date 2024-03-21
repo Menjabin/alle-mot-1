@@ -1,19 +1,38 @@
 import spinner from '../assets/spinner.svg';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Slider from './slider';
 
 import { useQuery } from '@tanstack/react-query';
 import { getActiveQuestion, setAnswer, setContestantAnswer } from '../utils/fetching';
+import { average } from '../utils/math';
 
 /**
  * Form for submitting answers.
  * The form component is responsible for fetching the current question and submitting the answer.
  */
 const Form = ({ id, contestant }) => {
-  const query = useQuery({ queryKey: ['active-question'], queryFn: () => getActiveQuestion()});
+  const [value, setValue] = useState(0);
 
-  const [value, setValue] = useState(5);
+  const query = useQuery({
+    queryKey: ['active-question'],
+    queryFn: () => getActiveQuestion(),
+    refetchInterval: 10000,
+    onSuccess: (data) => {
+      console.log('Hello from the onSuccess callback!'); // Add this line
+      console.log('Fetched data:', data); // Add this line
+      const avg = average(data.lower, data.upper);
+      console.log('Average:', avg); // And this line
+      setValue(avg);
+    },
+  });
+
+  useEffect(() => {
+    if (query.isSuccess) {
+      const avg = average(query.data.lower, query.data.upper);
+      setValue(avg);
+    }
+  }, [query.data]);
 
   const handleSubmit = () => {
     if (contestant)

@@ -8,9 +8,8 @@ import { db } from "./firebase";
 export const getActiveQuestion = async () => {
   const docRef = doc(db, 'active', 'question');
   const docSnap = await getDoc(docRef);
-  if (docSnap.exists()) {
+  if (docSnap.exists())
     return docSnap.data();
-  }
 };
 
 /**

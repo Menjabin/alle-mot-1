@@ -12,3 +12,8 @@ export const max = (a, b) => (a > b ? a : b);
  * Clamps a value to a range.
  */
 export const clamp = (value, lower, upper) => min(max(value, lower), upper);
+
+/**
+ * Calculates the average of two values.
+ */
+export const average = (a, b) => Math.round((a + b) / 2);
