@@ -1,7 +1,7 @@
 import "./index.css";
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App";
+import Main from "./routes/main";
 import Admin from "./routes/admin";
 import Contestant from "./routes/contestant";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
@@ -13,7 +13,7 @@ const queryClient = new QueryClient();
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App />,
+    element: <Main />,
   },
   {
     path: "/admin",

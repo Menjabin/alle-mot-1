@@ -15,6 +15,7 @@ const range = (start, stop, step = 1) =>
 const Slider = ({ value, setValue, lower, upper }) => {
   const [dragging, setDragging] = useState(false);
   const [position, setPosition] = useState(0);
+  const [translation, setTranslation] = useState(0);
 
   const offset = 100;
   const xCenter = window.innerWidth / 2;
@@ -29,9 +30,10 @@ const Slider = ({ value, setValue, lower, upper }) => {
 
     const newPosition = event.pageX;
     const diff = newPosition - position;
-    box.style.transform = `translate(${clamp(diff, -box.getBoundingClientRect().width, box.getBoundingClientRect().width)}px)`;
+    setPosition(newPosition);
+    setTranslation(prev => prev + diff);
+    box.style.transform = `translate(${translation}px)`;
 
-    const newValue = clamp(value + diff, lower, upper);
     setValue(num);
   };
 
@@ -47,7 +49,7 @@ const Slider = ({ value, setValue, lower, upper }) => {
     setDragging(false);
   };
 
-  const dragndrop = (event) => {
+  const drag = (event) => {
     event.preventDefault();
     if (dragging) computeValue(event);
   };
@@ -68,12 +70,12 @@ const Slider = ({ value, setValue, lower, upper }) => {
       {/* Main slider */}
       <div
         className="w-full bg-white"
-        onMouseMove={dragndrop}
+        onMouseMove={drag}
         onMouseDown={begindrag}
         onMouseUp={enddrag}
         onMouseLeave={enddrag}
       >
-        <div id="box" className="w-full bg-transparent">
+        <div id="box" className="py-3 w-full bg-transparent whitespace-nowrap">
           {range(lower, upper, 1).map((i) => (
             <span key={i} className={i == 0 ? "leftmost" : ""} style={{display: 'inline-block', width: `${offset}px`}}>
               {i}
