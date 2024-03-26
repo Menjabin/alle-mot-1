@@ -1,5 +1,4 @@
 import '../index.css';
-import { clamp } from '../utils/math';
 
 import { useEffect, useState } from 'react';
 

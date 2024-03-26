@@ -18,7 +18,7 @@ export const getActiveQuestion = async () => {
  */
 export const setActiveQuestion = async (question) => {
   const docRef = doc(db, 'active', 'question');
-  updateDoc(docRef, { id: question.id, question: question.question, lower: question.lower, upper: question.upper });
+  updateDoc(docRef, { id: question.id, answer: question.answer, question: question.question, lower: question.lower, upper: question.upper });
 }
 
 /**
@@ -34,11 +34,33 @@ export const getQuestions = async () => {
 };
 
 /**
+ * Retrieve all answers from the database.
+ */
+export const getAnswers = async () => {
+  const querySnapshot = await getDocs(collection(db, 'answers'));
+  const answers = [];
+  querySnapshot.forEach((doc) => {
+    answers.push({ id: doc.id, ...doc.data() });
+  });
+  return answers;
+}
+
+/**
  * Submit an answer for the active question.
  */
 export const setAnswer = async (id, value) => {
   const docRef = doc(db, 'answers', id);
   setDoc(docRef, { answer: value }, { merge: true });
+}
+
+/**
+ * Get the contestant answer for the active question.
+ */
+export const getContestantAnswer = async () => {
+  const docRef = doc(db, 'contestant', 'answer');
+  const docSnap = await getDoc(docRef);
+  if (docSnap.exists())
+    return docSnap.data();
 }
 
 /**
