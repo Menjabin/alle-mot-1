@@ -7,14 +7,15 @@ const position = (value, lower, upper) => {
 }
 
 /**
- * Slider which allows the user to select a value from a range.
+ * Slider which shows the contestant result,
+ * and the average result when the space bar is pressed.
  */
 const ResultsSlider = ({ answers, contestant, active }) => {
   let averageAnswer = 0;
   for (const answer of answers) {
     averageAnswer += answer.answer;
   }
-  averageAnswer /= answers.length;
+  averageAnswer = Math.round(averageAnswer / answers.length);
 
   const contestantAnswer = contestant.answer;
 
@@ -31,13 +32,46 @@ const ResultsSlider = ({ answers, contestant, active }) => {
     const areaOffset = position(Math.max(0, contestantAnswer - active.answer), lower, upper);
     area.style.left = `${areaOffset}%`;
     area.style.width = `${(contestantOffset-areaOffset) * 2}%`;
+
+    const contestantText = document.getElementById('contestant-text');
+    contestantText.style.left = `${contestantOffset-0.3}%`;
+
+    document.body.onkeyup = async e => {
+      if (e.key === ' ' || e.code === 'Space')
+      {
+        const average = document.getElementById('average');
+        average.style.visibility = 'visible';
+    
+        const averageText = document.getElementById('average-text');
+        averageText.style.visibility = 'visible';
+
+        const averageOffset = position(averageAnswer, lower, upper);
+        for (let pos = 0; pos <= averageOffset; pos+=0.1)
+        {
+          average.style.left = `${pos}%`;
+          averageText.style.left = `${pos-0.3}%`;
+          averageText.innerHTML = Math.round(pos/10);
+          await new Promise(r => setTimeout(r, 5));
+        }
+      }
+    }
   }, [])
 
   return (
-    <div id='container' className='w-10/12 bg-white outer'>
-      <div id='contestant' className='py-8 w-1 bg-black relative top'></div>
-      <div id='area' className='py-5 w-1 bg-primary relative below'></div>
-      <div id='average' className='py-5 w-1 bg-black relative top'></div>
+    <div className='w-10/12 mx-auto'>
+      <div className='w-full outer'>
+        <span id='contestant-text' className='text-white w-2 relative block top'>{contestantAnswer}</span>
+        <span id='average-text' className='text-white w-1 relative block top invisible'>0</span>
+      </div>
+      <div id='container' className='w-full bg-white outer'>
+        <div id='contestant' className='py-8 w-1 bg-black relative top'></div>
+        <div id='area' className='py-8 w-1 bg-primary relative below'></div>
+        <div id='average' className='py-8 w-1 bg-black relative top invisible'></div>
+      </div>
+      <div>
+        <span className='text-white float-left'>{lower}</span>
+        <span className='text-white float-right'>{upper}</span>
+      </div>
     </div>
   );
 };

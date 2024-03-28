@@ -2,7 +2,7 @@ import Form from '../components/form';
 import { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
-function Main() {
+const Main = () => {
   const [id, setId] = useState('');
 
   useEffect(() => {
