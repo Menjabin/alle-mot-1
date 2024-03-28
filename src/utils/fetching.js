@@ -22,6 +22,14 @@ export const setActiveQuestion = async (question) => {
 }
 
 /**
+ * Update the given question in firebase with its new attributes.
+ */
+export const updateQuestion = async (question) => {
+  const docRef = doc(db, 'questions', question.id);
+  updateDoc(docRef, { question: question.question, answer: question.answer, lower: question.lower, upper: question.upper });
+}
+
+/**
  * Get all questions.
  */
 export const getQuestions = async () => {
