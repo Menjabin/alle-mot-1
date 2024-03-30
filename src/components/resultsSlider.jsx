@@ -16,6 +16,7 @@ const ResultsSlider = ({ answers, contestant, active }) => {
     averageAnswer += answer.answer;
   }
   averageAnswer = Math.round(averageAnswer / answers.length);
+  console.log(averageAnswer);
 
   const contestantAnswer = contestant.answer;
 
@@ -24,17 +25,24 @@ const ResultsSlider = ({ answers, contestant, active }) => {
 
   useEffect(() => {
     const contestant = document.getElementById('contestant');
-
     const contestantOffset = position(contestantAnswer, lower, upper);
     contestant.style.left = `${contestantOffset}%`;
 
+    const answer = document.getElementById('answer');
+    const answerOffset = position(active.answer, lower, upper);
+    answer.style.left = `${answerOffset}%`;
+
     const area = document.getElementById('area');
-    const areaOffset = position(Math.max(0, contestantAnswer - active.answer), lower, upper);
+    //const areaOffset = position(Math.max(0, contestantAnswer - active.answer), lower, upper);
+    const areaOffset = contestantOffset - Math.abs(contestantOffset - answerOffset);
     area.style.left = `${areaOffset}%`;
     area.style.width = `${(contestantOffset-areaOffset) * 2}%`;
 
     const contestantText = document.getElementById('contestant-text');
     contestantText.style.left = `${contestantOffset-0.3}%`;
+
+    const answerText = document.getElementById('answer-text');
+    answerText.style.left = `${answerOffset-0.3}%`;
 
     document.body.onkeyup = async e => {
       if (e.key === ' ' || e.code === 'Space')
@@ -50,7 +58,7 @@ const ResultsSlider = ({ answers, contestant, active }) => {
         {
           average.style.left = `${pos}%`;
           averageText.style.left = `${pos-0.3}%`;
-          averageText.innerHTML = Math.round(pos/10);
+          averageText.innerHTML = Math.round((pos/100) * upper);
           await new Promise(r => setTimeout(r, 5));
         }
       }
@@ -60,12 +68,14 @@ const ResultsSlider = ({ answers, contestant, active }) => {
   return (
     <div className='w-10/12 mx-auto'>
       <div className='w-full outer'>
-        <span id='contestant-text' className='text-white w-2 relative block top'>{contestantAnswer}</span>
+        <span id='contestant-text' className='text-white w-1 relative block top'>{contestantAnswer}</span>
+        <span id='answer-text' className='text-white w-1 relative block top'>{active.answer}</span>
         <span id='average-text' className='text-white w-1 relative block top invisible'>0</span>
       </div>
       <div id='container' className='w-full bg-white outer'>
         <div id='contestant' className='py-8 w-1 bg-black relative top'></div>
         <div id='area' className='py-8 w-1 bg-primary relative below'></div>
+        <div id='answer' className='py-8 w-1 bg-black relative top'></div>
         <div id='average' className='py-8 w-1 bg-black relative top invisible'></div>
       </div>
       <div>
