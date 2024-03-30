@@ -11,11 +11,11 @@ const QuestionList = ({ active, questions, changeActive }) => {
       <table className='table-auto'>
         <thead>
           <tr>
-            <th className='border-r p-4'>Gjør aktiv</th>
-            <th className='border-r p-4'>Nummer</th>
-            <th className='border-r p-4'>Spørsmål</th>
-            <th className='border-r p-4'>Svar</th>
-            <th className='p-4'>Oppdater spørsmål</th>
+            <th className='border-r p-2'>Gjør aktiv</th>
+            <th className='border-r p-2'>Nummer</th>
+            <th className='border-r p-2'>Spørsmål</th>
+            <th className='border-r p-2'>Svar</th>
+            <th className='p-2'>Oppdater spørsmål</th>
           </tr>
         </thead>
         <tbody>

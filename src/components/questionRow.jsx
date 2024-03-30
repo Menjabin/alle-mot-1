@@ -21,25 +21,25 @@ const QuestionRow = ({ question, changeActive, active, questions }) => {
 
   return (
     <tr className='border-t'>
-      <td className='border-r p-4'>{question.id != active.id ? <Button onClick={() => changeActive(question.id, questions)}>Gjør aktiv</Button> : <></>}</td>
-      <td className='border-r p-4'>{question.id} {question.id == active.id ? '(aktiv)' : <></>}</td>
-      <td className='border-r p-4'>
+      <td className='border-r'>{question.id != active.id ? <Button onClick={() => changeActive(question.id, questions)}>Gjør aktiv</Button> : <></>}</td>
+      <td className='border-r'>{question.id} {question.id == active.id ? '(aktiv)' : <></>}</td>
+      <td className='border-r'>
         <input
           form={`form${question.id}`}
           value={questionText}
           onChange={e => setQuestionText(e.target.value)}
-          className='text-secondary p-2'
+          className='text-secondary'
         />
       </td>
-      <td className='border-r p-4'>
+      <td className='border-r'>
         <input 
           form={`form${question.id}`}
           value={answerText}
           onChange={e => setAnswerText(e.target.value)}
-          className='text-secondary p-2'
+          className='text-secondary p-1'
         />
       </td>
-      <td className='p-4'>
+      <td className='p-1'>
         {questionText === question.question && answerText === question.answer ? <></> :
           <Button onClick={submit}>Oppdater</Button>
         }
