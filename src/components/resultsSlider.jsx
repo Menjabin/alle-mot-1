@@ -33,9 +33,9 @@ const ResultsSlider = ({ answers, contestant, active }) => {
     answer.style.left = `${answerOffset}%`;
 
     const area = document.getElementById('area');
-    const areaOffset = answerOffset - Math.abs(answerOffset - contestantOffset);
+    const areaOffset = Math.max(answerOffset - Math.abs(answerOffset - contestantOffset), 0);
     area.style.left = `${areaOffset}%`;
-    area.style.width = `${Math.min(answerOffset * 2, answerOffset)}%`;
+    area.style.width = `${Math.abs(answerOffset - contestantOffset) * 2}%`;
 
     const contestantText = document.getElementById('contestant-text');
     contestantText.style.left = `${contestantOffset-0.3}%`;
