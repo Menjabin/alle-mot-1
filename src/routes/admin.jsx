@@ -1,8 +1,9 @@
 import spinner from '../assets/spinner.svg';
 
 import { useQueryClient, useQuery, useMutation } from '@tanstack/react-query';
-import { getActiveQuestion, setActiveQuestion, deleteAnswers, getQuestions } from "../utils/fetching";
+import { getActiveQuestion, setActiveQuestion, deleteAnswers, getQuestions, deactivateQuestion } from "../utils/fetching";
 import QuestionList from '../components/questionList';
+import Button from '../components/button';
 
 /**
  * The admin page. Contains dangerous functionality.
@@ -11,8 +12,12 @@ import QuestionList from '../components/questionList';
 const Admin = () => {
   const queryClient = useQueryClient();
   const activeQuery = useQuery({ queryKey: ['active-question'], queryFn: () => getActiveQuestion()});
-  const mutation = useMutation({
+  const setActive = useMutation({
     mutationFn: setActiveQuestion,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['active-question'] }),
+  });
+  const disableActive = useMutation({
+    mutationFn: deactivateQuestion,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['active-question'] }),
   });
 
@@ -23,7 +28,7 @@ const Admin = () => {
       return;
 
     deleteAnswers();
-    mutation.mutate(questions.find((question) => question.id === id));
+    setActive.mutate(questions.find((question) => question.id === id));
   }
 
   if (activeQuery.isLoading || questionsQuery.isLoading)
@@ -32,6 +37,7 @@ const Admin = () => {
   return (
     <div className="App">
       <div className="App-header bg-current text-white">
+        <Button onClick={() => disableActive.mutate()}>Steng for svar</Button>
         <QuestionList
           active={activeQuery.data}
           questions={questionsQuery.data}

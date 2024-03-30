@@ -19,10 +19,7 @@ const Form = ({ id, contestant }) => {
     queryFn: () => getActiveQuestion(),
     refetchInterval: 10000,
     onSuccess: (data) => {
-      console.log('Hello from the onSuccess callback!'); // Add this line
-      console.log('Fetched data:', data); // Add this line
       const avg = average(data.lower, data.upper);
-      console.log('Average:', avg); // And this line
       setValue(avg);
     },
   });
@@ -32,7 +29,7 @@ const Form = ({ id, contestant }) => {
       const avg = average(query.data.lower, query.data.upper);
       setValue(avg);
     }
-  }, [query.data]);
+  }, [query.data, query.isSuccess]);
 
   const handleSubmit = () => {
     if (contestant)
@@ -43,6 +40,9 @@ const Form = ({ id, contestant }) => {
 
   if (query.isLoading)
     return <img src={spinner} alt='Loading' />;
+  
+  if (query.data.active === false && !contestant)
+    return <p className='text-white'>Innsending av svar er stengt</p>
 
   return query.isSuccess && <SubForm active={query.data} value={value} setValue={setValue} submit={handleSubmit} />;
 };

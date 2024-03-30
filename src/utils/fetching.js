@@ -18,7 +18,15 @@ export const getActiveQuestion = async () => {
  */
 export const setActiveQuestion = async (question) => {
   const docRef = doc(db, 'active', 'question');
-  updateDoc(docRef, { id: question.id, answer: question.answer, question: question.question, lower: question.lower, upper: question.upper });
+  updateDoc(docRef, { id: question.id, active: true, answer: question.answer, question: question.question, lower: question.lower, upper: question.upper });
+}
+
+/**
+ * Set the currently active question to inactive.
+ */
+export const deactivateQuestion = async () => {
+  const docRef = doc(db, 'active', 'question');
+  updateDoc(docRef, { active: false });
 }
 
 /**
