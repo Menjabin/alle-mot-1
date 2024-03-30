@@ -33,10 +33,9 @@ const ResultsSlider = ({ answers, contestant, active }) => {
     answer.style.left = `${answerOffset}%`;
 
     const area = document.getElementById('area');
-    //const areaOffset = position(Math.max(0, contestantAnswer - active.answer), lower, upper);
-    const areaOffset = contestantOffset - Math.abs(contestantOffset - answerOffset);
+    const areaOffset = answerOffset - Math.abs(answerOffset - contestantOffset);
     area.style.left = `${areaOffset}%`;
-    area.style.width = `${(contestantOffset-areaOffset) * 2}%`;
+    area.style.width = `${Math.min(answerOffset * 2, answerOffset)}%`;
 
     const contestantText = document.getElementById('contestant-text');
     contestantText.style.left = `${contestantOffset-0.3}%`;
@@ -74,7 +73,7 @@ const ResultsSlider = ({ answers, contestant, active }) => {
       </div>
       <div id='container' className='w-full bg-white outer'>
         <div id='contestant' className='py-8 w-1 bg-black relative top'></div>
-        <div id='area' className='py-8 w-1 bg-primary relative below'></div>
+        <div id='area' className='py-8 w-1 bg-primary relative below overflow-x-hidden'></div>
         <div id='answer' className='py-8 w-1 bg-black relative top'></div>
         <div id='average' className='py-8 w-1 bg-black relative top invisible'></div>
       </div>
