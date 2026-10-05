@@ -2,7 +2,7 @@ import Form from '../components/form';
 import { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
-const Main = () => {
+export const Main = () => {
   const [id, setId] = useState('');
 
   useEffect(() => {
@@ -16,12 +16,6 @@ const Main = () => {
   }, [setId]);
 
   return (
-    <div className='App'>
-      <div className='App-header bg-current text-secondary'>
-        <Form id={id} />
-      </div>
-    </div>
+    <Form id={id} />
   );
-}
-
-export default Main;
+};

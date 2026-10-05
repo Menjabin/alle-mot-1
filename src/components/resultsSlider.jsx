@@ -11,6 +11,9 @@ const position = (value, lower, upper) => {
  * and the average result when the space bar is pressed.
  */
 const ResultsSlider = ({ answers, contestant, active }) => {
+  console.log(answers);
+  console.log(contestant);
+
   let averageAnswer = 0;
   for (const answer of answers) {
     averageAnswer += answer.answer;

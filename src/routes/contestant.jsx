@@ -1,14 +1,7 @@
 import Form from '../components/form';
 
-const Contestant = () => {
-
+export const Contestant = () => {
   return (
-    <div className='App'>
-      <div className='App-header bg-current text-secondary'>
-        <Form id={'contestant'} contestant />
-      </div>
-    </div>
+    <Form id="contestant" contestant />
   );
-}
-
-export default Contestant;
+};

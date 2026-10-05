@@ -4,7 +4,7 @@ import Button from '../components/button';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { updateQuestion } from '../utils/fetching';
 
-const QuestionRow = ({ question, changeActive, active, questions }) => {
+export const QuestionRow = ({ question, changeActive, active, questions }) => {
   const [questionText, setQuestionText] = useState(question.question);
   const [answerText, setAnswerText] = useState(question.answer);
 
@@ -21,14 +21,14 @@ const QuestionRow = ({ question, changeActive, active, questions }) => {
 
   return (
     <tr className='border-t'>
-      <td className='border-r'>{question.id != active.id ? <Button onClick={() => changeActive(question.id, questions)}>Gjør aktiv</Button> : <></>}</td>
-      <td className='border-r'>{question.id} {question.id == active.id ? '(aktiv)' : <></>}</td>
+      <td className='border-r'>{question.id !== active.id ? <Button onClick={() => changeActive(question.id, questions)}>Gjør aktiv</Button> : <></>}</td>
+      <td className='border-r'>{question.sort} {question.id === active.id ? '(aktiv)' : <></>}</td>
       <td className='border-r'>
         <input
           form={`form${question.id}`}
           value={questionText}
           onChange={e => setQuestionText(e.target.value)}
-          className='text-secondary'
+          className='w-full p-2 text-secondary'
         />
       </td>
       <td className='border-r'>
@@ -36,16 +36,14 @@ const QuestionRow = ({ question, changeActive, active, questions }) => {
           form={`form${question.id}`}
           value={answerText}
           onChange={e => setAnswerText(e.target.value)}
-          className='text-secondary p-1'
+          className='w-full p-2 text-secondary'
         />
       </td>
       <td className='p-1'>
         {questionText === question.question && answerText === question.answer ? <></> :
-          <Button onClick={submit}>Oppdater</Button>
+          <Button onClick={submit}>Lagre</Button>
         }
       </td>
     </tr>
   );
 };
-
-export default QuestionRow;

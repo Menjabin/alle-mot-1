@@ -1,14 +1,24 @@
-import QuestionRow from '../components/questionRow';
+import { useState } from "react";
+
+import { QuestionRow } from '../components/questionRow';
+import Button from '../components/button';
 
 /**
  * Presents all questions, with the option to change any aspect of them.
  */
-const QuestionList = ({ active, questions, changeActive }) => {
+export const QuestionList = ({ active, questions, changeActive }) => {
+  const [tempQuestions, setTempQuestions] = useState([]);
+
+  const addTempQuestion = () => {
+    const newTempQuestion = { question: "", answer: "" };
+    setTempQuestions([...tempQuestions, newTempQuestion]);
+  }
+
   return (
-    <div className='mx-auto'>
+    <div className='w-4/5 mt-10 mx-auto'>
       <p><b>Spørsmålsoversikt</b></p>
 
-      <table className='table-auto'>
+      <table className='w-full table-auto'>
         <thead>
           <tr>
             <th className='border-r p-2'>Gjør aktiv</th>
@@ -28,10 +38,19 @@ const QuestionList = ({ active, questions, changeActive }) => {
               questions={questions}
             />
           ))}
+          {tempQuestions.map((question) => (
+            <QuestionRow
+              key={question.id}
+              question={question}
+              changeActive={changeActive}
+              active={active}
+              questions={questions}
+            />
+          ))}
         </tbody>
       </table>
+
+      <Button onClick={addTempQuestion}>Legg til spørsmål</Button>
     </div>
   );
 };
-
-export default QuestionList;

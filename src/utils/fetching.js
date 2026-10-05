@@ -1,125 +1,150 @@
-import { collection, doc, getDoc, getDocs, setDoc, updateDoc, query, limit, writeBatch } from "firebase/firestore";
-
-import { db } from "./firebase";
+import { supabase } from "../lib/supabase";
 
 /**
  * Get the currently active question.
  */
 export const getActiveQuestion = async () => {
-  const docRef = doc(db, 'active', 'question');
-  const docSnap = await getDoc(docRef);
-  if (docSnap.exists())
-    return docSnap.data();
+  const { data, error } = await supabase
+    .from("question")
+    .select()
+    .eq("active", true)
+    .limit(1)
+    .single();
+
+  if (error)
+    throw error;
+
+  return data;
 };
 
 /**
- * Update the currently active question.
- * All question data except the answer is copied over.
+ * Set the currently active question.
  */
 export const setActiveQuestion = async (question) => {
-  const docRef = doc(db, 'active', 'question');
-  updateDoc(docRef, { id: question.id, active: true, answer: question.answer, question: question.question, lower: question.lower, upper: question.upper });
+  await supabase
+    .from("question")
+    .update({ active: true })
+    .match({ id: question.id });
+
+  await supabase
+    .from("question")
+    .update({ active: false })
+    .neq("id", question.id);
 }
 
 /**
  * Set the currently active question to inactive.
  */
 export const deactivateQuestion = async () => {
-  const docRef = doc(db, 'active', 'question');
-  updateDoc(docRef, { active: false });
+  const { data, error } = await supabase
+    .from("question")
+    .update({ active: false })
+    .match({ active: true });
+  
+  if (error)
+    throw error;
+
+  return data;
 }
 
 /**
  * Update the given question in firebase with its new attributes.
  */
 export const updateQuestion = async (question) => {
-  const docRef = doc(db, 'questions', question.id);
-  updateDoc(docRef, { question: question.question, answer: question.answer, lower: question.lower, upper: question.upper });
+  const { data, error } = await supabase
+    .from("question")
+    .upsert(question, { onConflict: "id" });
+  
+  if (error)
+    throw error;
+
+  return data;
 }
 
 /**
  * Get all questions.
  */
 export const getQuestions = async () => {
-  const querySnapshot = await getDocs(collection(db, 'questions'));
-  const questions = [];
-  querySnapshot.forEach((doc) => {
-    questions.push({ id: doc.id, ...doc.data() });
-  });
-  return questions;
+  const { data, error } = await supabase
+    .from("question")
+    .select();
+
+  if (error)
+    throw error;
+
+  return data;
 };
 
 /**
  * Retrieve all answers from the database.
  */
 export const getAnswers = async () => {
-  const querySnapshot = await getDocs(collection(db, 'answers'));
-  const answers = [];
-  querySnapshot.forEach((doc) => {
-    answers.push({ id: doc.id, ...doc.data() });
-  });
-  return answers;
+  const { data, error } = await supabase
+    .from("answer")
+    .select()
+    .neq("id", "contestant");
+
+  if (error)
+    throw error;
+
+  return data;
 }
 
 /**
  * Submit an answer for the active question.
  */
 export const setAnswer = async (id, value) => {
-  const docRef = doc(db, 'answers', id);
-  setDoc(docRef, { answer: value }, { merge: true });
+  const { data, error } = await supabase
+    .from("answer")
+    .upsert({ id: id, value: value }, { onConflict: "id" });
+  
+  if (error)
+    throw error;
+
+  return data;
 }
 
 /**
  * Get the contestant answer for the active question.
  */
 export const getContestantAnswer = async () => {
-  const docRef = doc(db, 'contestant', 'answer');
-  const docSnap = await getDoc(docRef);
-  if (docSnap.exists())
-    return docSnap.data();
+  const { data, error } = await supabase
+    .from("answer")
+    .select()
+    .eq("id", "contestant")
+    .limit(1)
+    .single();
+
+  if (error)
+    throw error;
+
+  return data;
 }
 
 /**
  * Submit a contestant answer for the active question.
  */
 export const setContestantAnswer = async (value) => {
-  const docRef = doc(db, 'contestant', 'answer');
-  updateDoc(docRef, { answer: value });
+  const { data, error } = await supabase
+    .from("answer")
+    .upsert({ id: "contestant", value: value }, { onConflict: "id" });
+  
+  if (error)
+    throw error;
+
+  return data;
 }
 
 /**
  * Delete all answers. Done whenever the active question changes.
  */
 export const deleteAnswers = async () => {
-  deleteCollection(db, "answers", 10);
-}
-
-/**
- * Delete all documents in a firestore collection by deleting them in batches.
- */
-const deleteCollection = async (db, collectionPath, batchSize) => {
-  const collectionRef = collection(db, collectionPath);
-  const q = query(collectionRef, limit(batchSize));;
+  const { data, error } = await supabase
+    .from("answer")
+    .delete();
   
-  return new Promise((resolve, reject) => {
-      deleteQueryBatch(db, q, resolve).catch(reject);
-  });
-};
+  if (error)
+    throw error;
 
-const deleteQueryBatch = async (db, q, resolve) => {
-  const snapshot = await getDocs(q);
-
-  const batchSize = snapshot.size;
-  if (batchSize === 0) {
-      resolve();
-      return;
-  }
-
-  const batch = writeBatch(db);
-  snapshot.docs.forEach(doc => {
-      batch.delete(doc.ref);
-  });
-  await batch.commit();
-
-  deleteQueryBatch(db, q, resolve);
+  return data;
 }
