@@ -65,7 +65,7 @@ const ResultsSlider = ({ answers, contestant, active }) => {
         }
       }
     }
-  }, [])
+  }, [active.answer, averageAnswer, contestantAnswer, lower, upper])
 
   return (
     <div className='w-10/12 mx-auto'>
