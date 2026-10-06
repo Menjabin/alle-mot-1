@@ -1,80 +1,216 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 /**
  * Slider which shows the contestant result,
- * and the average result when the space bar is pressed.
+ * the actual result, and the average result
+ * when the space bar is pressed.
  */
 export const ResultsSlider = ({ answers, contestant, active }) => {
-  const answerSum = answers.reduce((sum, answer) => sum + answer.value, 0);
-  const averageAnswer = Math.round(answerSum / answers.length);
+  const answerSum = answers.reduce(
+    (sum, answer) => sum + answer.value,
+    0
+  );
 
-  const contestantAnswer = contestant.answer;
+  const averageAnswer = Math.round(
+    answerSum / answers.length
+  );
+
+  const contestantAnswer = contestant.value;
 
   const lower = active.lower;
   const upper = active.upper;
 
+  const contestantOffset = position(
+    contestantAnswer,
+    lower,
+    upper
+  );
+
+  const answerOffset = position(
+    active.answer,
+    lower,
+    upper
+  );
+
+  const averageOffset = position(
+    averageAnswer,
+    lower,
+    upper
+  );
+
+  const [showAverage, setShowAverage] = useState(false);
+  const [animatedAverage, setAnimatedAverage] = useState(
+    0
+  );
+
   useEffect(() => {
-    const contestant = document.getElementById('contestant');
-    const contestantOffset = position(contestantAnswer, lower, upper);
-    contestant.style.left = `${contestantOffset}%`;
+    const handleKeyUp = async (e) => {
+      if (e.key === ' ' || e.code === 'Space') {
+        e.preventDefault();
 
-    const answer = document.getElementById('answer');
-    const answerOffset = position(active.answer, lower, upper);
-    answer.style.left = `${answerOffset}%`;
+        setShowAverage(true);
 
-    const area = document.getElementById('area');
-    const areaOffset = Math.max(answerOffset - Math.abs(answerOffset - contestantOffset), 0);
-    area.style.left = `${areaOffset}%`;
-    area.style.width = `${Math.abs(answerOffset - contestantOffset) * 2}%`;
+        for (
+          let pos = 0;
+          pos <= averageOffset;
+          pos += 0.1
+        ) {
+          setAnimatedAverage(pos);
 
-    const contestantText = document.getElementById('contestant-text');
-    contestantText.style.left = `${contestantOffset-0.3}%`;
-
-    const answerText = document.getElementById('answer-text');
-    answerText.style.left = `${answerOffset-0.3}%`;
-
-    document.body.onkeyup = async e => {
-      if (e.key === ' ' || e.code === 'Space')
-      {
-        const average = document.getElementById('average');
-        average.style.visibility = 'visible';
-    
-        const averageText = document.getElementById('average-text');
-        averageText.style.visibility = 'visible';
-
-        const averageOffset = position(averageAnswer, lower, upper);
-        for (let pos = 0; pos <= averageOffset; pos+=0.1)
-        {
-          average.style.left = `${pos}%`;
-          averageText.style.left = `${pos-0.3}%`;
-          averageText.innerHTML = Math.round((pos/100) * upper);
-          await new Promise(r => setTimeout(r, 5));
+          await new Promise((resolve) =>
+            setTimeout(resolve, 5)
+          );
         }
       }
-    }
-  }, [active.answer, averageAnswer, contestantAnswer, lower, upper])
+    };
+
+    document.body.addEventListener(
+      'keyup',
+      handleKeyUp
+    );
+
+    return () => {
+      document.body.removeEventListener(
+        'keyup',
+        handleKeyUp
+      );
+    };
+  }, [averageOffset]);
+
+  // Area between contestant and actual answer
+  const distance = Math.abs(
+    answerOffset - contestantOffset
+  );
+
+  const areaLeft = Math.max(
+    0,
+    answerOffset - distance
+  );
+
+  const areaRight = Math.min(
+    100,
+    answerOffset + distance
+  );
+
+  const areaWidth = areaRight - areaLeft;
 
   return (
-    <div className='w-10/12 mx-auto'>
-      <div className='w-full outer'>
-        <span id='contestant-text' className='text-white w-1 relative block top'>{contestantAnswer}</span>
-        <span id='answer-text' className='text-white w-1 relative block top'>{active.answer}</span>
-        <span id='average-text' className='text-white w-1 relative block top invisible'>0</span>
+    <div className="w-10/12 mx-auto">
+      {/* Answer values */}
+      <div
+        className="w-full relative"
+        style={{ height: '32px' }}
+      >
+        {/* Contestant answer */}
+        <span
+          className="text-white absolute"
+          style={{
+            left: `${contestantOffset}%`,
+            top: '-8px',
+            transform: 'translateX(-50%)',
+          }}
+        >
+          {contestantAnswer}
+        </span>
+
+        {/* Actual answer */}
+        <span
+          className="text-white absolute"
+          style={{
+            left: `${answerOffset}%`,
+            top: '-8px',
+            transform: 'translateX(-50%)',
+          }}
+        >
+          {active.answer}
+        </span>
+
+        {/* Average answer */}
+        {showAverage && (
+          <span
+            className="text-white absolute"
+            style={{
+              left: `${animatedAverage}%`,
+              top: '-8px',
+              transform: 'translateX(-50%)',
+            }}
+          >
+            {Math.round(
+              (animatedAverage / 100) *
+                (upper - lower) +
+                lower
+            )}
+          </span>
+        )}
       </div>
-      <div id='container' className='w-full bg-white outer'>
-        <div id='contestant' className='py-8 w-1 bg-black relative top'></div>
-        <div id='area' className='py-8 w-1 bg-primary relative below overflow-x-hidden'></div>
-        <div id='answer' className='py-8 w-1 bg-black relative top'></div>
-        <div id='average' className='py-8 w-1 bg-black relative top invisible'></div>
+
+      {/* Slider */}
+      <div
+        id="container"
+        className="w-full bg-white relative"
+        style={{ height: '64px' }}
+      >
+        {/* Contestant */}
+        <div
+          id="contestant"
+          className="w-1 bg-black absolute top-0 h-full"
+          style={{
+            left: `${contestantOffset}%`,
+            transform: 'translateX(-50%)',
+          }}
+        />
+
+        {/* Area between contestant and actual answer */}
+        <div
+          id="area"
+          className="bg-primary absolute top-0 h-full"
+          style={{
+            left: `${areaLeft}%`,
+            width: `${areaWidth}%`,
+          }}
+        />
+
+        {/* Actual answer */}
+        <div
+          id="answer"
+          className="w-1 bg-black absolute top-0 h-full"
+          style={{
+            left: `${answerOffset}%`,
+            transform: 'translateX(-50%)',
+          }}
+        />
+
+        {/* Average */}
+        {showAverage && (
+          <div
+            id="average"
+            className="w-1 bg-black absolute top-0 h-full"
+            style={{
+              left: `${animatedAverage}%`,
+              transform: 'translateX(-50%)',
+            }}
+          />
+        )}
       </div>
+
+      {/* Slider bounds */}
       <div>
-        <span className='text-white float-left'>{lower}</span>
-        <span className='text-white float-right'>{upper}</span>
+        <span className="text-white float-left">
+          {lower}
+        </span>
+
+        <span className="text-white float-right">
+          {upper}
+        </span>
       </div>
     </div>
   );
 };
 
 const position = (value, lower, upper) => {
-  return (value - lower) / (upper - lower) * 100;
+  if (upper === lower) {
+    return 0;
+  }
+
+  return ((value - lower) / (upper - lower)) * 100;
 };
