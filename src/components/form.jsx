@@ -1,11 +1,15 @@
-import spinner from '../assets/spinner.svg';
+import spinner from "../assets/spinner.svg";
 
-import { useEffect, useState } from 'react';
-import Slider from './slider';
+import { useEffect, useState } from "react";
+import Slider from "./slider";
 
-import { useQuery } from '@tanstack/react-query';
-import { getActiveQuestion, setAnswer, setContestantAnswer } from '../utils/fetching';
-import { average } from '../utils/math';
+import { useQuery } from "@tanstack/react-query";
+import {
+  getActiveQuestion,
+  setAnswer,
+  setContestantAnswer,
+} from "../utils/fetching";
+import { average } from "../utils/math";
 
 /**
  * Form for submitting answers.
@@ -15,7 +19,7 @@ const Form = ({ id, contestant }) => {
   const [value, setValue] = useState(0);
 
   const query = useQuery({
-    queryKey: ['active-question'],
+    queryKey: ["active-question"],
     queryFn: () => getActiveQuestion(),
     refetchInterval: 10000,
     onSuccess: (data) => {
@@ -32,34 +36,45 @@ const Form = ({ id, contestant }) => {
   }, [query.data, query.isSuccess]);
 
   const handleSubmit = () => {
-    if (contestant)
-      setContestantAnswer(value);
-    else
-      setAnswer(id, value);
+    if (contestant) setContestantAnswer(value);
+    else setAnswer(id, value);
   };
 
-  if (query.isLoading)
-    return <img src={spinner} alt='Loading' />;
-  
-  if (query.data.active === false && !contestant)
-    return <p className='text-white'>Innsending av svar er stengt</p>
+  if (query.isLoading) return <img src={spinner} alt="Loading" />;
 
-  return query.isSuccess && <SubForm active={query.data} value={value} setValue={setValue} submit={handleSubmit} />;
+  if (query.data.active === false && !contestant)
+    return <p className="text-white">Innsending av svar er stengt</p>;
+
+  return (
+    query.isSuccess && (
+      <SubForm
+        active={query.data}
+        value={value}
+        setValue={setValue}
+        submit={handleSubmit}
+      />
+    )
+  );
 };
 
 const SubForm = ({ active, value, setValue, submit }) => {
   return (
-    <div className='w-4/5'>
-      <h1 className='text-3xl font-bold text-white mb-8'>{active.question}</h1>
-      <Slider value={value} setValue={setValue} lower={active.lower} upper={active.upper} />
+    <div className="w-4/5">
+      <h1 className="text-3xl font-bold text-white mb-8">{active.question}</h1>
+      <Slider
+        value={value}
+        setValue={setValue}
+        lower={active.lower}
+        upper={active.upper}
+      />
       <button
         onClick={submit}
-        className='mt-5 bg-primary p-3 shadow-xl hover:bg-white'
+        className="mt-5 bg-primary p-3 shadow-xl hover:bg-white"
       >
         Send inn svar
       </button>
     </div>
   );
-}
+};
 
 export default Form;

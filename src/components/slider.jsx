@@ -1,11 +1,11 @@
-import '../index.css';
+import "../index.css";
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from "react";
 
 const range = (start, stop, step = 1) =>
   Array.from(
     { length: Math.floor((stop - start) / step) + 1 },
-    (_, index) => start + index * step
+    (_, index) => start + index * step,
   );
 
 /**
@@ -30,8 +30,7 @@ const Slider = ({ value, setValue, lower, upper }) => {
 
     setValue(initialValue);
 
-    const initialTranslation =
-      -(initialValue - lower) * offset;
+    const initialTranslation = -(initialValue - lower) * offset;
 
     setTranslation(initialTranslation);
   }, [lower, upper, setValue]);
@@ -83,7 +82,7 @@ const Slider = ({ value, setValue, lower, upper }) => {
 
       nextTranslation = Math.max(
         minTranslation,
-        Math.min(maxTranslation, nextTranslation)
+        Math.min(maxTranslation, nextTranslation),
       );
 
       /*
@@ -92,18 +91,11 @@ const Slider = ({ value, setValue, lower, upper }) => {
        *
        * Every number is `offset` pixels apart.
        */
-      const steps = Math.round(
-        -nextTranslation / offset
-      );
+      const steps = Math.round(-nextTranslation / offset);
 
       const newValue = lower + steps;
 
-      setValue(
-        Math.max(
-          lower,
-          Math.min(upper, newValue)
-        )
-      );
+      setValue(Math.max(lower, Math.min(upper, newValue)));
 
       return nextTranslation;
     });
@@ -121,9 +113,7 @@ const Slider = ({ value, setValue, lower, upper }) => {
     <div className="w-full">
       {/* Selected value */}
       <div className="w-24 mx-auto">
-        <div className="w-full bg-primary py-1 text-center">
-          {value}
-        </div>
+        <div className="w-full bg-primary py-1 text-center">{value}</div>
 
         {/* Fixed center indicator */}
         <div
@@ -142,7 +132,7 @@ const Slider = ({ value, setValue, lower, upper }) => {
           w-full
           bg-white
           overflow-hidden
-          ${dragging ? 'cursor-grabbing' : 'cursor-grab'}
+          ${dragging ? "cursor-grabbing" : "cursor-grab"}
         `}
         onPointerDown={beginDrag}
         onPointerMove={drag}

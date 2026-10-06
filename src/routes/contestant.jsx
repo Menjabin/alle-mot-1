@@ -1,7 +1,5 @@
-import Form from '../components/form';
+import Form from "../components/form";
 
 export const Contestant = () => {
-  return (
-    <Form id="contestant" contestant />
-  );
+  return <Form id="contestant" contestant />;
 };

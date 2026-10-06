@@ -1,25 +1,18 @@
-import { useEffect, useState } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useEffect, useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import {
-  DndContext,
-  closestCenter,
-} from '@dnd-kit/core';
+import { DndContext, closestCenter } from "@dnd-kit/core";
 
 import {
   arrayMove,
   SortableContext,
   verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
+} from "@dnd-kit/sortable";
 
-import { QuestionRow } from '../components/questionRow';
-import { updateQuestionOrder } from '../utils/fetching';
+import { QuestionRow } from "../components/questionRow";
+import { updateQuestionOrder } from "../utils/fetching";
 
-export const QuestionList = ({
-  active,
-  questions,
-  changeActive,
-}) => {
+export const QuestionList = ({ active, questions, changeActive }) => {
   const [items, setItems] = useState(questions);
 
   const queryClient = useQueryClient();
@@ -34,7 +27,7 @@ export const QuestionList = ({
 
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['all-questions'],
+        queryKey: ["all-questions"],
       });
     },
   });
@@ -47,19 +40,11 @@ export const QuestionList = ({
     }
 
     setItems((currentItems) => {
-      const oldIndex = currentItems.findIndex(
-        (item) => item.id === active.id
-      );
+      const oldIndex = currentItems.findIndex((item) => item.id === active.id);
 
-      const newIndex = currentItems.findIndex(
-        (item) => item.id === over.id
-      );
+      const newIndex = currentItems.findIndex((item) => item.id === over.id);
 
-      const reordered = arrayMove(
-        currentItems,
-        oldIndex,
-        newIndex
-      );
+      const reordered = arrayMove(currentItems, oldIndex, newIndex);
 
       // Persist the new order
       reorderMutation.mutate(reordered);
@@ -74,10 +59,7 @@ export const QuestionList = ({
         <b>Spørsmålsoversikt</b>
       </p>
 
-      <DndContext
-        collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}
-      >
+      <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <table className="w-full table-auto">
           <thead>
             <tr>

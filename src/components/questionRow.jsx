@@ -1,32 +1,22 @@
-import { useState } from 'react';
-import Button from '../components/button';
+import { useState } from "react";
+import Button from "../components/button";
 
-import { useQueryClient, useMutation } from '@tanstack/react-query';
-import { updateQuestion } from '../utils/fetching';
+import { useQueryClient, useMutation } from "@tanstack/react-query";
+import { updateQuestion } from "../utils/fetching";
 
-import { useSortable } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
-export const QuestionRow = ({
-  question,
-  changeActive,
-  active,
-  questions,
-}) => {
+export const QuestionRow = ({ question, changeActive, active, questions }) => {
   const [questionText, setQuestionText] = useState(question.question);
   const [answerText, setAnswerText] = useState(question.answer);
   const [lowerText, setLowerText] = useState(question.lower);
   const [upperText, setUpperText] = useState(question.upper);
 
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-  } = useSortable({
-    id: question.id,
-  });
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({
+      id: question.id,
+    });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -39,7 +29,7 @@ export const QuestionRow = ({
     mutationFn: updateQuestion,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['all-questions'],
+        queryKey: ["all-questions"],
       });
     },
   });
@@ -63,27 +53,17 @@ export const QuestionRow = ({
     upperText !== question.upper;
 
   return (
-    <tr
-      ref={setNodeRef}
-      style={style}
-      className="border-t"
-      {...attributes}
-    >
+    <tr ref={setNodeRef} style={style} className="border-t" {...attributes}>
       <td className="border-r">
         {question.id !== active.id && (
-          <Button
-            onClick={() =>
-              changeActive(question.id, questions)
-            }
-          >
+          <Button onClick={() => changeActive(question.id, questions)}>
             Gjør aktiv
           </Button>
         )}
       </td>
 
       <td className="border-r p-2">
-        {question.sort}{' '}
-        {question.id === active.id && '(aktiv)'}
+        {question.sort} {question.id === active.id && "(aktiv)"}
       </td>
 
       <td className="border-r p-1">
@@ -123,11 +103,7 @@ export const QuestionRow = ({
       </td>
 
       <td className="border-r p-1">
-        {hasChanges && (
-          <Button onClick={submit}>
-            Lagre
-          </Button>
-        )}
+        {hasChanges && <Button onClick={submit}>Lagre</Button>}
       </td>
 
       <td className="w-10 text-center">
