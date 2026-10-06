@@ -1,25 +1,12 @@
-import '../index.css';
-
 import { useEffect } from 'react';
-
-const position = (value, lower, upper) => {
-  return (value - lower) / (upper - lower) * 100;
-}
 
 /**
  * Slider which shows the contestant result,
  * and the average result when the space bar is pressed.
  */
-const ResultsSlider = ({ answers, contestant, active }) => {
-  console.log(answers);
-  console.log(contestant);
-
-  let averageAnswer = 0;
-  for (const answer of answers) {
-    averageAnswer += answer.answer;
-  }
-  averageAnswer = Math.round(averageAnswer / answers.length);
-  console.log(averageAnswer);
+export const ResultsSlider = ({ answers, contestant, active }) => {
+  const answerSum = answers.reduce((sum, answer) => sum + answer.value, 0);
+  const averageAnswer = Math.round(answerSum / answers.length);
 
   const contestantAnswer = contestant.answer;
 
@@ -88,4 +75,6 @@ const ResultsSlider = ({ answers, contestant, active }) => {
   );
 };
 
-export default ResultsSlider;
+const position = (value, lower, upper) => {
+  return (value - lower) / (upper - lower) * 100;
+};

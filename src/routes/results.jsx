@@ -1,7 +1,7 @@
 import spinner from '../assets/spinner.svg';
 
 import { getAnswers, getContestantAnswer, getActiveQuestion } from '../utils/fetching';
-import ResultsSlider from '../components/resultsSlider';
+import { ResultsSlider } from '../components/resultsSlider';
 import { useQuery } from '@tanstack/react-query';
 
 export const Results = () => {
