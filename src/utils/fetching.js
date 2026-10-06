@@ -33,6 +33,23 @@ export const setActiveQuestion = async (question) => {
 }
 
 /**
+ * Reorder the questions
+ */
+export const updateQuestionOrder = async (questions) => {
+  if (!questions)
+    return;
+
+  for (let i = 0; i < questions.length; i++) {
+    const question = questions[i];
+
+    await supabase
+      .from("question")
+      .update({ sort: i + 1 })
+      .match({ id: question.id });
+  }
+};
+
+/**
  * Set the currently active question to inactive.
  */
 export const deactivateQuestion = async () => {
@@ -67,7 +84,8 @@ export const updateQuestion = async (question) => {
 export const getQuestions = async () => {
   const { data, error } = await supabase
     .from("question")
-    .select();
+    .select()
+    .order("sort");
 
   if (error)
     throw error;
@@ -141,7 +159,8 @@ export const setContestantAnswer = async (value) => {
 export const deleteAnswers = async () => {
   const { data, error } = await supabase
     .from("answer")
-    .delete();
+    .delete()
+    .neq("id", -1); // No answer has ID -1, so this will delete everything
   
   if (error)
     throw error;

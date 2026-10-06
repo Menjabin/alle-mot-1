@@ -1,58 +1,115 @@
-import { useState } from "react";
+import { useEffect, useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+
+import {
+  DndContext,
+  closestCenter,
+} from '@dnd-kit/core';
+
+import {
+  arrayMove,
+  SortableContext,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 
 import { QuestionRow } from '../components/questionRow';
-import Button from '../components/button';
+import { updateQuestionOrder } from '../utils/fetching';
 
-/**
- * Presents all questions, with the option to change any aspect of them.
- */
-export const QuestionList = ({ active, questions, changeActive }) => {
-  const [tempQuestions, setTempQuestions] = useState([]);
+export const QuestionList = ({
+  active,
+  questions,
+  changeActive,
+}) => {
+  const [items, setItems] = useState(questions);
 
-  const addTempQuestion = () => {
-    const newTempQuestion = { question: "", answer: "", sort: questions.length + tempQuestions.length + 1 };
-    setTempQuestions([...tempQuestions, newTempQuestion]);
-  }
+  const queryClient = useQueryClient();
+
+  // Keep local ordering in sync when questions are refetched.
+  useEffect(() => {
+    setItems(questions);
+  }, [questions]);
+
+  const reorderMutation = useMutation({
+    mutationFn: updateQuestionOrder,
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['all-questions'],
+      });
+    },
+  });
+
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
+
+    if (!over || active.id === over.id) {
+      return;
+    }
+
+    setItems((currentItems) => {
+      const oldIndex = currentItems.findIndex(
+        (item) => item.id === active.id
+      );
+
+      const newIndex = currentItems.findIndex(
+        (item) => item.id === over.id
+      );
+
+      const reordered = arrayMove(
+        currentItems,
+        oldIndex,
+        newIndex
+      );
+
+      // Persist the new order
+      reorderMutation.mutate(reordered);
+
+      return reordered;
+    });
+  };
 
   return (
-    <div className='w-4/5 mt-10 mx-auto'>
-      <p><b>Spørsmålsoversikt</b></p>
+    <div className="w-4/5 mx-auto">
+      <p>
+        <b>Spørsmålsoversikt</b>
+      </p>
 
-      <table className='w-full table-auto'>
-        <thead>
-          <tr>
-            <th className='border-r p-2'>Gjør aktiv</th>
-            <th className='border-r p-2'>Nummer</th>
-            <th className='border-r p-2'>Spørsmål</th>
-            <th className='border-r p-2'>Svar</th>
-            <th className='border-r p-2'>Laveste alternativ</th>
-            <th className='border-r p-2'>Høyeste alternativ</th>
-            <th className='p-2'>Oppdater spørsmål</th>
-          </tr>
-        </thead>
-        <tbody>
-          {questions.map((question) => (
-            <QuestionRow
-              key={question.id}
-              question={question}
-              changeActive={changeActive}
-              active={active}
-              questions={questions}
-            />
-          ))}
-          {tempQuestions.map((question) => (
-            <QuestionRow
-              key={question.id}
-              question={question}
-              changeActive={changeActive}
-              active={active}
-              questions={questions}
-            />
-          ))}
-        </tbody>
-      </table>
+      <DndContext
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <table className="w-full table-auto">
+          <thead>
+            <tr>
+              <th className="p-2">Gjør aktiv</th>
+              <th className="p-2">Nummer</th>
+              <th className="p-2">Spørsmål</th>
+              <th className="p-2">Svar</th>
+              <th className="p-2">Lav</th>
+              <th className="p-2">Høy</th>
+              <th className="p-2">Lagre</th>
+              <th className="p-2"></th>
+            </tr>
+          </thead>
 
-      <Button onClick={addTempQuestion}>Legg til spørsmål</Button>
+          <tbody>
+            <SortableContext
+              items={items.map((question) => question.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              {items.map((question) => (
+                <QuestionRow
+                  key={question.id}
+                  question={question}
+                  changeActive={changeActive}
+                  active={active}
+                  questions={items}
+                />
+              ))}
+            </SortableContext>
+          </tbody>
+        </table>
+      </DndContext>
     </div>
   );
 };
