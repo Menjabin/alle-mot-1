@@ -10,7 +10,7 @@ export const QuestionList = ({ active, questions, changeActive }) => {
   const [tempQuestions, setTempQuestions] = useState([]);
 
   const addTempQuestion = () => {
-    const newTempQuestion = { question: "", answer: "" };
+    const newTempQuestion = { question: "", answer: "", sort: questions.length + tempQuestions.length + 1 };
     setTempQuestions([...tempQuestions, newTempQuestion]);
   }
 
@@ -25,6 +25,8 @@ export const QuestionList = ({ active, questions, changeActive }) => {
             <th className='border-r p-2'>Nummer</th>
             <th className='border-r p-2'>Spørsmål</th>
             <th className='border-r p-2'>Svar</th>
+            <th className='border-r p-2'>Laveste alternativ</th>
+            <th className='border-r p-2'>Høyeste alternativ</th>
             <th className='p-2'>Oppdater spørsmål</th>
           </tr>
         </thead>
