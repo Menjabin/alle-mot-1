@@ -53,60 +53,72 @@ export const QuestionRow = ({ question, changeActive, active, questions }) => {
     upperText !== question.upper;
 
   return (
-    <tr ref={setNodeRef} style={style} className="border-t" {...attributes}>
-      <td className="border-r">
+    <tr
+      ref={setNodeRef}
+      style={style}
+      className="hover:bg-slate-50"
+      {...attributes}
+    >
+      <td className="border-b border-slate-200 px-4 py-3 text-slate-900">
         {question.id !== active.id && (
-          <Button onClick={() => changeActive(question.id, questions)}>
+          <Button
+            onClick={() => changeActive(question.id, questions)}
+            className="w-full mt-0"
+          >
             Gjør aktiv
           </Button>
         )}
       </td>
 
-      <td className="border-r p-2">
+      <td className="border-b border-slate-200 px-4 py-3 text-slate-600 text-current text-center">
         {question.sort} {question.id === active.id && "(aktiv)"}
       </td>
 
-      <td className="border-r p-1">
+      <td className="border-b border-slate-200 px-4 py-3 text-slate-600">
         <input
           form={`form${question.id}`}
           value={questionText}
           onChange={(e) => setQuestionText(e.target.value)}
-          className="w-full p-2 text-secondary"
+          className="w-full p-2 text-secondary rounded"
         />
       </td>
 
-      <td className="border-r p-1">
+      <td className="border-b border-slate-200 px-4 py-3 text-slate-600">
         <input
           form={`form${question.id}`}
           value={answerText}
           onChange={(e) => setAnswerText(e.target.value)}
-          className="w-full p-2 text-secondary"
+          className="w-full p-2 text-secondary rounded"
         />
       </td>
 
-      <td className="border-r p-1">
+      <td className="border-b border-slate-200 px-4 py-3 text-slate-600">
         <input
           form={`form${question.id}`}
           value={lowerText}
           onChange={(e) => setLowerText(e.target.value)}
-          className="w-full p-2 text-secondary"
+          className="w-full p-2 text-secondary rounded"
         />
       </td>
 
-      <td className="border-r p-1">
+      <td className="border-b border-slate-200 px-4 py-3 text-slate-600">
         <input
           form={`form${question.id}`}
           value={upperText}
           onChange={(e) => setUpperText(e.target.value)}
-          className="w-full p-2 text-secondary"
+          className="w-full p-2 text-secondary rounded"
         />
       </td>
 
-      <td className="border-r p-1">
-        {hasChanges && <Button onClick={submit}>Lagre</Button>}
+      <td className="border-b border-slate-200 px-4 py-3 text-slate-600">
+        {hasChanges && (
+          <Button onClick={submit} className="w-full mt-0">
+            Lagre
+          </Button>
+        )}
       </td>
 
-      <td className="w-10 text-center">
+      <td className="w-10 text-center border-b border-slate-200 text-current">
         <button
           type="button"
           {...listeners}

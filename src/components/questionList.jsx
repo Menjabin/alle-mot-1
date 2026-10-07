@@ -54,27 +54,41 @@ export const QuestionList = ({ active, questions, changeActive }) => {
   };
 
   return (
-    <div className="w-4/5 mx-auto">
-      <p>
+    <div className="w-4/5 my-7 mx-auto overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
+      <p className="text-current my-5">
         <b>Spørsmålsoversikt</b>
       </p>
 
       <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <table className="w-full table-auto">
-          <thead>
+        <table className="w-full text-sm text-left text-slate-600">
+          <thead className="bg-slate-50 text-current text-center text-xs font-medium uppercase tracking-wide text-slate-500">
             <tr>
-              <th className="p-2">Gjør aktiv</th>
-              <th className="p-2">Nummer</th>
-              <th className="p-2">Spørsmål</th>
-              <th className="p-2">Svar</th>
-              <th className="p-2">Lav</th>
-              <th className="p-2">Høy</th>
-              <th className="p-2">Lagre</th>
-              <th className="p-2"></th>
+              <th scope="col" className="px-6 py-3">
+                Gjør aktiv
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Nummer
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Spørsmål
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Svar
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Lav
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Høy
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Lagre
+              </th>
+              <th scope="col" className="px-6 py-3"></th>
             </tr>
           </thead>
 
-          <tbody>
+          <tbody className="ivide-y divide-slate-200">
             <SortableContext
               items={items.map((question) => question.id)}
               strategy={verticalListSortingStrategy}
