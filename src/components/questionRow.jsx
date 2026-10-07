@@ -7,7 +7,13 @@ import { updateQuestion } from "../utils/fetching";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
-export const QuestionRow = ({ question, changeActive, active, questions }) => {
+export const QuestionRow = ({
+  question,
+  changeActive,
+  active,
+  questions,
+  temporary,
+}) => {
   const [questionText, setQuestionText] = useState(question.question);
   const [answerText, setAnswerText] = useState(question.answer);
   const [lowerText, setLowerText] = useState(question.lower);
@@ -60,13 +66,17 @@ export const QuestionRow = ({ question, changeActive, active, questions }) => {
       {...attributes}
     >
       <td className="border-b border-slate-200 px-4 py-3 text-slate-900">
-        {question.id !== active.id && (
-          <Button
-            onClick={() => changeActive(question.id, questions)}
-            className="w-full mt-0"
-          >
-            Gjør aktiv
-          </Button>
+        {temporary ? (
+          <p className="text-current w-full text-center">Lagre først</p>
+        ) : (
+          question.id !== active.id && (
+            <Button
+              onClick={() => changeActive(question.id, questions)}
+              className="w-full mt-0"
+            >
+              Gjør aktiv
+            </Button>
+          )
         )}
       </td>
 

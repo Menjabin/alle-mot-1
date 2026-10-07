@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import Button from "../components/button";
 
 import { DndContext, closestCenter } from "@dnd-kit/core";
 
@@ -14,6 +15,7 @@ import { updateQuestionOrder } from "../utils/fetching";
 
 export const QuestionList = ({ active, questions, changeActive }) => {
   const [items, setItems] = useState(questions);
+  const [tempQuestions, setTempQuestions] = useState([]);
 
   const queryClient = useQueryClient();
 
@@ -35,77 +37,93 @@ export const QuestionList = ({ active, questions, changeActive }) => {
   const handleDragEnd = (event) => {
     const { active, over } = event;
 
-    if (!over || active.id === over.id) {
-      return;
-    }
+    if (!over || active.id === over.id) return;
 
     setItems((currentItems) => {
       const oldIndex = currentItems.findIndex((item) => item.id === active.id);
-
       const newIndex = currentItems.findIndex((item) => item.id === over.id);
-
       const reordered = arrayMove(currentItems, oldIndex, newIndex);
 
       // Persist the new order
       reorderMutation.mutate(reordered);
-
       return reordered;
     });
   };
 
+  const addTempQuestion = () => {
+    const tempQuestion = { question: "", answer: "", lower: "", upper: "" };
+    setTempQuestions([...tempQuestions, tempQuestion]);
+  };
+
   return (
-    <div className="w-4/5 my-7 mx-auto overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
-      <p className="text-current my-5">
-        <b>Spørsmålsoversikt</b>
-      </p>
+    <>
+      <div className="w-4/5 mt-5 mx-auto overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
+        <p className="text-current my-5">
+          <b>Spørsmålsoversikt</b>
+        </p>
 
-      <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <table className="w-full text-sm text-left text-slate-600">
-          <thead className="bg-slate-50 text-current text-center text-xs font-medium uppercase tracking-wide text-slate-500">
-            <tr>
-              <th scope="col" className="px-6 py-3">
-                Gjør aktiv
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Nummer
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Spørsmål
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Svar
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Lav
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Høy
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Lagre
-              </th>
-              <th scope="col" className="px-6 py-3"></th>
-            </tr>
-          </thead>
+        <DndContext
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <table className="w-full text-sm text-left text-slate-600">
+            <thead className="bg-slate-50 text-current text-center text-xs font-medium uppercase tracking-wide text-slate-500">
+              <tr>
+                <th scope="col" className="px-6 py-3">
+                  Gjør aktiv
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Nummer
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Spørsmål
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Svar
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Lav
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Høy
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Lagre
+                </th>
+                <th scope="col" className="px-6 py-3"></th>
+              </tr>
+            </thead>
 
-          <tbody className="ivide-y divide-slate-200">
-            <SortableContext
-              items={items.map((question) => question.id)}
-              strategy={verticalListSortingStrategy}
-            >
-              {items.map((question) => (
+            <tbody className="ivide-y divide-slate-200">
+              <SortableContext
+                items={items.map((question) => question.id)}
+                strategy={verticalListSortingStrategy}
+              >
+                {items.map((question) => (
+                  <QuestionRow
+                    key={question.id}
+                    question={question}
+                    changeActive={changeActive}
+                    active={active}
+                    questions={items}
+                  />
+                ))}
+              </SortableContext>
+              {tempQuestions.map((question) => (
                 <QuestionRow
                   key={question.id}
                   question={question}
                   changeActive={changeActive}
                   active={active}
                   questions={items}
+                  temporary
                 />
               ))}
-            </SortableContext>
-          </tbody>
-        </table>
-      </DndContext>
-    </div>
+            </tbody>
+          </table>
+        </DndContext>
+      </div>
+      <Button onClick={addTempQuestion}>Legg til spørsmål</Button>
+    </>
   );
 };
