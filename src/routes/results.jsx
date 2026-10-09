@@ -29,6 +29,16 @@ export const Results = () => {
   )
     return <img src={spinner} alt="Loading" />;
 
+  if (
+    answersQuery.isError ||
+    contestantQuery.isError ||
+    activeQuery.isError ||
+    answersQuery.data == null ||
+    contestantQuery.data == null ||
+    activeQuery.data == null
+  )
+    return <p className="text-white">Vi mangler fortsatt noen svar...</p>;
+
   return (
     <ResultsSlider
       answers={answersQuery.data}
