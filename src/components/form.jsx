@@ -5,6 +5,7 @@ import Slider from "./slider";
 
 import { useQuery } from "@tanstack/react-query";
 import {
+  getActive,
   getActiveQuestion,
   setAnswer,
   setContestantAnswer,
@@ -17,6 +18,12 @@ import { average } from "../utils/math";
  */
 const Form = ({ id, contestant }) => {
   const [value, setValue] = useState(0);
+
+  const activeQuery = useQuery({
+    queryKey: ["active-game"],
+    queryFn: () => getActive(),
+    refetchInterval: 10000,
+  });
 
   const query = useQuery({
     queryKey: ["active-question"],
@@ -40,9 +47,10 @@ const Form = ({ id, contestant }) => {
     else setAnswer(id, value);
   };
 
-  if (query.isLoading) return <img src={spinner} alt="Loading" />;
+  if (query.isLoading || activeQuery.isLoading)
+    return <img src={spinner} alt="Loading" />;
 
-  if (query.data.active === false && !contestant)
+  if (!activeQuery.data.value && !contestant)
     return <p className="text-white">Innsending av svar er stengt</p>;
 
   return (

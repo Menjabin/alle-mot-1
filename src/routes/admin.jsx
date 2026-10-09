@@ -6,7 +6,8 @@ import {
   setActiveQuestion,
   deleteAnswers,
   getQuestions,
-  deactivateQuestion,
+  getActive,
+  deactivate,
 } from "../utils/fetching";
 import { QuestionList } from "../components/questionList";
 import Button from "../components/button";
@@ -17,19 +18,34 @@ import Button from "../components/button";
  */
 export const Admin = () => {
   const queryClient = useQueryClient();
+
   const activeQuery = useQuery({
     queryKey: ["active-question"],
     queryFn: () => getActiveQuestion(),
   });
+
   const setActive = useMutation({
     mutationFn: setActiveQuestion,
     onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["active-question"] }),
+      Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: ["active-question"],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ["active-game"],
+        }),
+      ]),
   });
-  const disableActive = useMutation({
-    mutationFn: deactivateQuestion,
+
+  const activeGameQuery = useQuery({
+    queryKey: ["active-game"],
+    queryFn: () => getActive(),
+  });
+
+  const deactivateMutation = useMutation({
+    mutationFn: deactivate,
     onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["active-question"] }),
+      queryClient.invalidateQueries({ queryKey: ["active-game"] }),
   });
 
   const questionsQuery = useQuery({
@@ -49,12 +65,22 @@ export const Admin = () => {
     setActive.mutate(questions.find((question) => question.id === id));
   };
 
-  if (activeQuery.isLoading || questionsQuery.isLoading)
+  if (
+    activeQuery.isLoading ||
+    questionsQuery.isLoading ||
+    activeGameQuery.isLoading
+  )
     return <img src={spinner} alt="Loading" />;
 
   return (
     <div className="App min-h-dvh flex flex-col items-center bg-current text-white">
-      <Button onClick={() => disableActive.mutate()}>Steng for svar</Button>
+      {!activeGameQuery.data.value ? (
+        <p className="mt-5">Innsending av svar er stengt</p>
+      ) : (
+        <Button onClick={() => deactivateMutation.mutate()}>
+          Steng for svar
+        </Button>
+      )}
       <QuestionList
         active={activeQuery.data}
         questions={questionsQuery.data}

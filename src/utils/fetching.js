@@ -1,6 +1,35 @@
 import { supabase } from "../lib/supabase";
 
 /**
+ * Deactivate the game.
+ */
+export const deactivate = async () => {
+  await supabase.from("game").update({ value: false }).match({ id: "active" });
+};
+
+/**
+ * Activate the game.
+ */
+export const activate = async () => {
+  await supabase.from("active").update({ value: true }).match({ id: "active" });
+};
+
+/**
+ * Activate the game.
+ */
+export const getActive = async () => {
+  const { data, error } = await supabase
+    .from("game")
+    .select()
+    .limit(1)
+    .single();
+
+  if (error) throw error;
+
+  return data;
+};
+
+/**
  * Get the currently active question.
  */
 export const getActiveQuestion = async () => {
@@ -29,6 +58,8 @@ export const setActiveQuestion = async (question) => {
     .from("question")
     .update({ active: false })
     .neq("id", question.id);
+
+  await supabase.from("game").update({ value: true }).match({ id: "active" });
 };
 
 /**
@@ -45,20 +76,6 @@ export const updateQuestionOrder = async (questions) => {
       .update({ sort: i + 1 })
       .match({ id: question.id });
   }
-};
-
-/**
- * Set the currently active question to inactive.
- */
-export const deactivateQuestion = async () => {
-  const { data, error } = await supabase
-    .from("question")
-    .update({ active: false })
-    .match({ active: true });
-
-  if (error) throw error;
-
-  return data;
 };
 
 /**
