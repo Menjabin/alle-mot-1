@@ -6,9 +6,13 @@ import { useEffect, useState } from "react";
  * when the space bar is pressed.
  */
 export const ResultsSlider = ({ answers, contestant, active }) => {
-  const answerSum = answers.reduce((sum, answer) => sum + answer.value, 0);
+  const answerSum = answers.reduce(
+    (sum, answer) => sum + (answer.value - "0"),
+    0,
+  );
 
   const averageAnswer = Math.round(answerSum / answers.length);
+  console.log(averageAnswer);
 
   const contestantAnswer = contestant.value;
 
