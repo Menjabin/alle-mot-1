@@ -66,9 +66,13 @@ export const QuestionRow = ({
       {...attributes}
     >
       <td className="border-b border-slate-200 px-4 py-3 text-slate-900">
-        <button onClick={onDelete} className="w-full">
-          🗑️
-        </button>
+        {question.id !== active.id ? (
+          <button onClick={onDelete} className="w-full">
+            🗑️
+          </button>
+        ) : (
+          <></>
+        )}
       </td>
 
       <td className="border-b border-slate-200 px-4 py-3 text-slate-900">
