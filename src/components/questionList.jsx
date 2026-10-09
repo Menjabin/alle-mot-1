@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Button from "../components/button";
+import { deleteQuestion, updateQuestion } from "../utils/fetching";
 
 import { DndContext, closestCenter } from "@dnd-kit/core";
 
@@ -15,7 +16,6 @@ import { updateQuestionOrder } from "../utils/fetching";
 
 export const QuestionList = ({ active, questions, changeActive }) => {
   const [items, setItems] = useState(questions);
-  const [tempQuestions, setTempQuestions] = useState([]);
 
   const queryClient = useQueryClient();
 
@@ -27,6 +27,24 @@ export const QuestionList = ({ active, questions, changeActive }) => {
   const reorderMutation = useMutation({
     mutationFn: updateQuestionOrder,
 
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["all-questions"],
+      });
+    },
+  });
+
+  const addMutation = useMutation({
+    mutationFn: updateQuestion,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["all-questions"],
+      });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: deleteQuestion,
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["all-questions"],
@@ -50,14 +68,19 @@ export const QuestionList = ({ active, questions, changeActive }) => {
     });
   };
 
-  const addTempQuestion = () => {
-    const tempQuestion = { question: "", answer: "", lower: "", upper: "" };
-    setTempQuestions([...tempQuestions, tempQuestion]);
+  const addQuestion = () => {
+    addMutation.mutate({
+      question: "",
+      answer: null,
+      lower: null,
+      upper: null,
+      sort: questions.length + 1,
+    });
   };
 
   return (
     <>
-      <div className="w-4/5 mt-5 mx-auto overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
+      <div className="w-9/10 mt-5 mx-auto overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
         <p className="text-current my-5">
           <b>Spørsmålsoversikt</b>
         </p>
@@ -69,6 +92,9 @@ export const QuestionList = ({ active, questions, changeActive }) => {
           <table className="w-full text-sm text-left text-slate-600">
             <thead className="bg-slate-50 text-current text-center text-xs font-medium uppercase tracking-wide text-slate-500">
               <tr>
+                <th scope="col" className="px-6 py-3">
+                  Slett
+                </th>
                 <th scope="col" className="px-6 py-3">
                   Gjør aktiv
                 </th>
@@ -105,25 +131,16 @@ export const QuestionList = ({ active, questions, changeActive }) => {
                     question={question}
                     changeActive={changeActive}
                     active={active}
+                    onDelete={() => deleteMutation.mutate(question.id)}
                     questions={items}
                   />
                 ))}
               </SortableContext>
-              {tempQuestions.map((question) => (
-                <QuestionRow
-                  key={question.id}
-                  question={question}
-                  changeActive={changeActive}
-                  active={active}
-                  questions={items}
-                  temporary
-                />
-              ))}
             </tbody>
           </table>
         </DndContext>
       </div>
-      <Button onClick={addTempQuestion}>Legg til spørsmål</Button>
+      <Button onClick={addQuestion}>Legg til spørsmål</Button>
     </>
   );
 };

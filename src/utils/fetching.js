@@ -75,6 +75,20 @@ export const updateQuestion = async (question) => {
 };
 
 /**
+ * Delete the given question.
+ */
+export const deleteQuestion = async (questionId) => {
+  const { data, error } = await supabase
+    .from("question")
+    .delete()
+    .eq("id", questionId);
+
+  if (error) throw error;
+
+  return data;
+};
+
+/**
  * Get all questions.
  */
 export const getQuestions = async () => {

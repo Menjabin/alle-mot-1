@@ -12,7 +12,7 @@ export const QuestionRow = ({
   changeActive,
   active,
   questions,
-  temporary,
+  onDelete,
 }) => {
   const [questionText, setQuestionText] = useState(question.question);
   const [answerText, setAnswerText] = useState(question.answer);
@@ -66,17 +66,19 @@ export const QuestionRow = ({
       {...attributes}
     >
       <td className="border-b border-slate-200 px-4 py-3 text-slate-900">
-        {temporary ? (
-          <p className="text-current w-full text-center">Lagre først</p>
-        ) : (
-          question.id !== active.id && (
-            <Button
-              onClick={() => changeActive(question.id, questions)}
-              className="w-full mt-0"
-            >
-              Gjør aktiv
-            </Button>
-          )
+        <button onClick={onDelete} className="w-full">
+          🗑️
+        </button>
+      </td>
+
+      <td className="border-b border-slate-200 px-4 py-3 text-slate-900">
+        {question.id !== active.id && (
+          <Button
+            onClick={() => changeActive(question.id, questions)}
+            className="w-full mt-auto"
+          >
+            Gjør aktiv
+          </Button>
         )}
       </td>
 
@@ -122,7 +124,7 @@ export const QuestionRow = ({
 
       <td className="border-b border-slate-200 px-4 py-3 text-slate-600">
         {hasChanges && (
-          <Button onClick={submit} className="w-full mt-0">
+          <Button onClick={submit} className="w-full mt-auto">
             Lagre
           </Button>
         )}
