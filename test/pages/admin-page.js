@@ -22,7 +22,7 @@ export class AdminPage {
 
   async goto() {
     await this.page.goto(adminUrl);
-    await this.loadingIndicator.waitFor({ state: "hidden" });
+    await this.loadingIndicator.waitFor({ state: "detached" });
   }
 
   async addQuestion() {
@@ -35,13 +35,49 @@ export class AdminPage {
     await deleteButton.click();
   }
 
+  /**
+   * Activate a given question in the list.
+   */
   async activateQuestion(index) {
+    this.page.on("dialog", (dialog) => dialog.accept());
+
     const question = this.questions.nth(index);
-    const activateButton = question.locator("button", { name: /gjør aktiv/i });
+    const activateButton = question.getByRole("button", {
+      name: /gjør aktiv/i,
+    });
     await activateButton.click();
+
+    await this.page.waitForResponse((response) => response.status() === 200);
+  }
+
+  /**
+   * Iterate through all questions, and activate the first available one.
+   */
+  async activateAnyQuestion() {
+    this.page.on("dialog", (dialog) => dialog.accept());
+
+    const count = await this.questions.count();
+    for (let i = 0; i < count; i++) {
+      const question = await this.questions.nth(i);
+      const activateButton = question.getByRole("button", {
+        name: /gjør aktiv/i,
+      });
+      if (await activateButton.isVisible()) {
+        await activateButton.click();
+
+        await this.page.waitForResponse(
+          (response) => response.status() === 200,
+        );
+        return;
+      }
+    }
   }
 
   async stopAnswers() {
+    const responsePromise = this.page.waitForResponse(
+      (response) => response.status() === 200,
+    );
     await this.stopAnswersButton.click();
+    await responsePromise;
   }
 }

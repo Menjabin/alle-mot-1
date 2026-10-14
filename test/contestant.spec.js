@@ -1,22 +1,44 @@
 import { test, expect } from "@playwright/test";
-import { contestantUrl } from "./util/urls";
+import { AdminPage } from "./pages/admin-page";
+import { ContestantPage } from "./pages/contestant-page";
 
-test("Contestant still sees question when game is not active", async ({
+test("Contestant can see question and answer when game is not active", async ({
   page,
 }) => {
-  await page.goto(contestantUrl);
+  const adminPage = new AdminPage(page);
+  await adminPage.goto();
 
-  const question = page.getByRole("heading");
+  const stopAnswersButton = adminPage.stopAnswersButton;
+  const areAnswersStopped = !(await stopAnswersButton.isVisible());
+  if (!areAnswersStopped) await adminPage.stopAnswers();
+
+  const contestantPage = new ContestantPage(page);
+  await contestantPage.goto();
+
+  const question = contestantPage.question;
   await expect(question).toBeVisible();
+
+  const answerButton = contestantPage.answerButton;
+  await expect(answerButton).toBeVisible();
+
+  if (!areAnswersStopped) {
+    await adminPage.goto();
+    await adminPage.activateAnyQuestion();
+  }
 });
 
-test("Contestant can see question and submit answer", async ({ page }) => {
-  await page.goto(contestantUrl);
+test("Contestant can see question and answer when game is active", async ({
+  page,
+}) => {
+  const adminPage = new AdminPage(page);
+  await adminPage.goto();
+  await adminPage.activateAnyQuestion();
 
-  const question = page.getByRole("heading");
+  const contestantPage = new ContestantPage(page);
+  await contestantPage.goto();
+
+  const question = contestantPage.question;
   await expect(question).toBeVisible();
 
-  const button = page.getByRole("button", { name: /send inn svar/i });
-  await expect(button).toBeVisible();
-  await button.click();
+  await contestantPage.answer();
 });
