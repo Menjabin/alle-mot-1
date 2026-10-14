@@ -27,12 +27,14 @@ export class AdminPage {
 
   async addQuestion() {
     await this.addQuestionButton.click();
+    await this.page.waitForResponse((response) => response.status() === 200);
   }
 
   async deleteQuestion(index) {
     const question = this.questions.nth(index);
     const deleteButton = question.locator("td > button").nth(0);
     await deleteButton.click();
+    await this.page.waitForResponse((response) => response.status() === 200);
   }
 
   /**
@@ -74,10 +76,7 @@ export class AdminPage {
   }
 
   async stopAnswers() {
-    const responsePromise = this.page.waitForResponse(
-      (response) => response.status() === 200,
-    );
     await this.stopAnswersButton.click();
-    await responsePromise;
+    await this.page.waitForResponse((response) => response.status() === 200);
   }
 }

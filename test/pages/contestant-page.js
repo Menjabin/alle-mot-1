@@ -23,5 +23,6 @@ export class ContestantPage {
 
   async answer() {
     await this.answerButton.click();
+    await this.page.waitForResponse((response) => response.status() === 200);
   }
 }
