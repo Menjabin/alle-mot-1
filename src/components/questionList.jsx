@@ -80,8 +80,8 @@ export const QuestionList = ({ active, questions, changeActive }) => {
 
   return (
     <>
-      <div className="w-9/10 mt-5 mx-auto overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
-        <p className="text-current my-5">
+      <div className="w-9/10 mt-5 mx-auto overflow-hidden rounded-lg border border-slate-200 bg-white shadow-xs">
+        <p className="text-secondary my-5">
           <b>Spørsmålsoversikt</b>
         </p>
 
@@ -90,7 +90,7 @@ export const QuestionList = ({ active, questions, changeActive }) => {
           onDragEnd={handleDragEnd}
         >
           <table className="w-full text-sm text-left text-slate-600">
-            <thead className="bg-slate-50 text-current text-center text-xs font-medium uppercase tracking-wide text-slate-500">
+            <thead className="bg-slate-50 text-secondary text-center text-xs font-medium uppercase tracking-wide text-slate-500">
               <tr>
                 <th scope="col" className="px-6 py-3">
                   Slett

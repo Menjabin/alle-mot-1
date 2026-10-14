@@ -1,5 +1,3 @@
-import "../index.css";
-
 import { useEffect, useRef, useState } from "react";
 
 const range = (start, stop, step = 1) =>
@@ -119,9 +117,9 @@ const Slider = ({ value, setValue, lower, upper }) => {
         <div
           className="
             size-1/12 mx-auto
-            border-l-[20px] border-l-transparent
-            border-t-[25px] border-t-primary
-            border-r-[20px] border-r-transparent
+            border-l-20 border-l-transparent
+            border-t-25 border-t-primary
+            border-r-20 border-r-transparent
           "
         />
       </div>

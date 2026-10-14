@@ -73,7 +73,7 @@ export const Admin = () => {
     return <img src={spinner} alt="Loading" />;
 
   return (
-    <div className="App min-h-dvh flex flex-col items-center bg-current text-white">
+    <div className="App min-h-dvh flex flex-col items-center bg-secondary text-white">
       {!activeGameQuery.data.value ? (
         <p className="mt-5">Innsending av svar er stengt</p>
       ) : (

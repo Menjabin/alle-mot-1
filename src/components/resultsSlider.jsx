@@ -12,7 +12,6 @@ export const ResultsSlider = ({ answers, contestant, active }) => {
   );
 
   const averageAnswer = Math.round(answerSum / answers.length);
-  console.log(averageAnswer);
 
   const contestantAnswer = contestant.value;
 

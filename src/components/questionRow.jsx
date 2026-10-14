@@ -86,7 +86,7 @@ export const QuestionRow = ({
         )}
       </td>
 
-      <td className="border-b border-slate-200 px-4 py-3 text-slate-600 text-current text-center">
+      <td className="border-b border-slate-200 px-4 py-3 text-slate-600 text-secondary text-center">
         {question.sort} {question.id === active.id && "(aktiv)"}
       </td>
 
@@ -95,7 +95,7 @@ export const QuestionRow = ({
           form={`form${question.id}`}
           value={questionText}
           onChange={(e) => setQuestionText(e.target.value)}
-          className="w-full p-2 text-secondary rounded"
+          className="w-full p-2 text-secondary rounded-sm bg-[#ffffff]"
         />
       </td>
 
@@ -104,7 +104,7 @@ export const QuestionRow = ({
           form={`form${question.id}`}
           value={answerText}
           onChange={(e) => setAnswerText(e.target.value)}
-          className="w-full p-2 text-secondary rounded"
+          className="w-full p-2 text-secondary rounded-sm bg-[#ffffff]"
         />
       </td>
 
@@ -113,7 +113,7 @@ export const QuestionRow = ({
           form={`form${question.id}`}
           value={lowerText}
           onChange={(e) => setLowerText(e.target.value)}
-          className="w-full p-2 text-secondary rounded"
+          className="w-full p-2 text-secondary rounded-sm bg-[#ffffff]"
         />
       </td>
 
@@ -122,7 +122,7 @@ export const QuestionRow = ({
           form={`form${question.id}`}
           value={upperText}
           onChange={(e) => setUpperText(e.target.value)}
-          className="w-full p-2 text-secondary rounded"
+          className="w-full p-2 text-secondary rounded-sm bg-[#ffffff]"
         />
       </td>
 
@@ -134,7 +134,7 @@ export const QuestionRow = ({
         )}
       </td>
 
-      <td className="w-10 text-center border-b border-slate-200 text-current">
+      <td className="w-10 text-center border-b border-slate-200 text-secondary">
         <button
           type="button"
           {...listeners}
